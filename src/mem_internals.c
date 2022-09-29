@@ -52,6 +52,7 @@ Alloc mark_check_and_get_alloc(void *ptr) {
   unsigned long magic_last = *long_ptr;
   unsigned long size_last = *(long_ptr + 1);
   assert(size == size_last);
+  size_last;
   MemKind kind_last = magic_last & 0b11UL;
   magic_last &= ~(0b11UL); // pop 2 last bits
   assert(magic_last == magic);
