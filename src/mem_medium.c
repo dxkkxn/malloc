@@ -50,13 +50,13 @@ void create_new_block(unsigned long size) {
 void * emalloc_medium(unsigned long size) {
     assert(size < LARGEALLOC);
     assert(size > SMALLALLOC);
-    unsigned int block_size = puiss2(size);
+    unsigned int block_size = puiss2(size+32);
     if (arena.TZL[block_size] == NULL)
         create_new_block(block_size);
     assert(arena.TZL[block_size] != NULL);
     void * ptr = arena.TZL[block_size];
     //arena.TZL[block_size] = *ptr;
-    return mark_memarea_and_get_user_ptr(ptr, size, MEDIUM_KIND);
+    return mark_memarea_and_get_user_ptr(ptr, size+32, MEDIUM_KIND);
 }
 
 

@@ -53,7 +53,7 @@ TEST(Basic, onelarge) {
 
 TEST(Basic, oneallocloopsmall) {
     vector<void *> tab(100);
-    
+
     for (auto &t : tab) {
 	t = emalloc(64);
 	ASSERT_NE( t, nullptr );
@@ -66,7 +66,7 @@ TEST(Basic, oneallocloopsmall) {
 
 TEST(Basic, oneallocloopmedium) {
     vector<void *> tab(100);
-    
+
     for (auto &t : tab) {
 	t = emalloc(65);
 	ASSERT_NE( t, nullptr );

@@ -5,6 +5,7 @@
  ******************************************************/
 
 #include <assert.h>
+#include <stdint.h>
 #include "mem.h"
 #include "mem_internals.h"
 
@@ -14,18 +15,16 @@ void * emalloc_small(unsigned long size) {
         //= (char *)arena.chunkpool;
     if (arena.chunkpool  == NULL) {
         unsigned long block_size = mem_realloc_small();
-        //char * addr = (char *) arena.chunkpool;
-        //void **waddr = addr;
         void ** addr = arena.chunkpool;
-        for(unsigned long i = 96; i < block_size; i+=96) {
-            *addr = (char *)addr + 96;
-            *addr += 96;
+        assert(block_size % 96 == 0);
+        for(unsigned long i = 0; i < block_size/96; i++) {
+            *addr = (void *)((char *)addr + 96);
+            addr = *addr;
         }
         *addr = NULL;
     }
     void* valid_addr = arena.chunkpool;
-    void** warena = arena.chunkpool;
-    *warena = (unsigned long *) arena.chunkpool + 96/8;
+    arena.chunkpool = (char *)arena.chunkpool + 96;
     return mark_memarea_and_get_user_ptr(valid_addr, CHUNKSIZE, SMALL_KIND);
 }
 
