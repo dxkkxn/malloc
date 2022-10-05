@@ -24,34 +24,46 @@ unsigned int puiss2(unsigned long size) {
     return p;
 }
 
-void create_new_block(unsigned long size) {
+void alloc_new_block(unsigned long size){
     unsigned long max = FIRST_ALLOC_MEDIUM_EXPOSANT + arena.medium_next_exponant;
-    if (size == max) {
-        mem_realloc_medium();
-        assert(arena.TZL[size] != NULL);
+    long diff = max - size;
+    if(diff <= 0){       
+        mem_realloc_medium();   
     }
-    if (arena.TZL[size] == NULL) {
-        create_new_block(size + 1);
+    if(diff < 0){
+        mem_realloc_medium(); 
+        alloc_new_block(size + 1); 
     }
-    void * addr_to_divide = arena.TZL[size];
+    if(arena.TZL[size] == NULL || diff != 0){
+        alloc_new_block(size + 1);        
+    }
+    void *block_ptr = arena.TZL[size];
+    
+    //TZL[block_size] est remplacé par son compagnon s'il existe et est libéré sinon
     arena.TZL[size] = *(void **)arena.TZL[size];
-    void ** buddy = (void *) ((uint64_t)addr_to_divide^(1<<(size - 1)));
-    *(void **) addr_to_divide = buddy;
-    *buddy = arena.TZL[size-1];
-    arena.TZL[size-1] = addr_to_divide;
+
+    //construction du compagnon    
+    void *buddy = (void *)((unsigned long)block_ptr ^ (1 << (size - 1)));
+    *(void **)block_ptr = buddy;
+    arena.TZL[size - 1] = block_ptr; 
 }
 
-
-void * emalloc_medium(unsigned long size) {
+void *
+emalloc_medium(unsigned long size)
+{
     assert(size < LARGEALLOC);
     assert(size > SMALLALLOC);
-    unsigned int block_size = puiss2(size+32);
-    if (arena.TZL[block_size] == NULL)
-        create_new_block(block_size+1);
+    unsigned long real_size = size + 32;
+    unsigned int block_size = puiss2(real_size);
+    if(arena.TZL[block_size] == NULL){
+        alloc_new_block(block_size);
+    }
     assert(arena.TZL[block_size] != NULL);
-    void * ptr = arena.TZL[block_size];
-    arena.TZL[block_size] = *(void **) arena.TZL[block_size];
-    return mark_memarea_and_get_user_ptr(ptr, size+32, MEDIUM_KIND);
+    void *ptr = arena.TZL[block_size];
+    arena.TZL[block_size] = *(void **)arena.TZL[block_size];
+    return mark_memarea_and_get_user_ptr(ptr, block_size, MEDIUM_KIND);
+
+    return (void *) 0;
 }
 
 void * get_min_buddy(void * addr, unsigned long size) {
