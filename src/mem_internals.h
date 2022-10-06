@@ -20,10 +20,10 @@ extern "C" {
 	perror(c); exit(EXIT_FAILURE); } while(0)
 
 #define SMALLALLOC 64
-// SMALLALLOC + 2 MAGIC + 2 Tailles sur 8o == 96o 
+// SMALLALLOC + 2 MAGIC + 2 Tailles sur 8o == 96o
 #define CHUNKSIZE 96
 // 128 Kio == 128 * 1024 == 2**17 == (1<<17)
-#define LARGEALLOC (1<<17) 
+#define LARGEALLOC (1<<17)
 
 // 2**13o == 16Kio
 #define FIRST_ALLOC_SMALL (CHUNKSIZE <<7) // 96o * 128
