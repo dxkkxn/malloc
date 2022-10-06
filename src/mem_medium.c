@@ -71,7 +71,7 @@ void buddy_search(void *addr, unsigned long index) {
   while (curr != NULL) {
     if (curr == buddy_addr) {
       if (prev == NULL) {
-        // buddy in the head of linked list 
+        // buddy in the head of linked list
         arena.TZL[index] = *curr;
       } else {
         // gets out the block found
@@ -79,7 +79,7 @@ void buddy_search(void *addr, unsigned long index) {
       }
       void *min_addr =
           (uint64_t)addr < (uint64_t)buddy_addr ? addr : buddy_addr;
-      // get the smaller adresss and
+      // get the smaller adresss and search for the buddy in larger block
       buddy_search(min_addr, index + 1);
       return;
     }
